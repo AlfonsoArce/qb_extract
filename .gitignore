@@ -27,3 +27,7 @@ Thumbs.db
 
 # Claude Code local (personal) settings — shared .claude/ config can still be committed
 .claude/settings.local.json
+
+# Other modules copies
+qb_runner/
+qb_server/
