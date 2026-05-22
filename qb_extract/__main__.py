@@ -11,6 +11,9 @@ Usage examples:
     # Just invoices for testing
     python -m qb_extract --only invoices --from 2026-01-01
 
+    # A single invoice by its invoice number
+    python -m qb_extract --only invoices --ref-number 10523
+
     # Point at a specific company file (default: currently-open file)
     python -m qb_extract --company-file "C:/QB/MyCompany_DEV.QBW" --from 2024-01-01
 """
@@ -129,6 +132,16 @@ def main(argv: list[str] | None = None) -> int:
         help="Only run these query names (e.g. --only invoices bills customers).",
     )
     parser.add_argument(
+        "--ref-number",
+        type=str,
+        default=None,
+        help=(
+            "Pull a single transaction by its exact reference number (e.g. the "
+            "invoice number). Ignores the date range. Use with --only to target one "
+            "entity, e.g. --only invoices --ref-number 10523."
+        ),
+    )
+    parser.add_argument(
         "-v",
         "--verbose",
         action="store_true",
@@ -155,6 +168,8 @@ def main(argv: list[str] | None = None) -> int:
     logger.info("  company_file: %s", args.company_file or "<currently open>")
     logger.info("  qbxml_version: %s", args.qbxml_version)
     logger.info("  date range: %s -> %s", from_date or "<none>", to_date or "<none>")
+    if args.ref_number:
+        logger.info("  ref_number: %s (date range ignored)", args.ref_number)
     logger.info("  app_name: %s", args.app_name)
 
     extractor = Extractor(
@@ -165,6 +180,7 @@ def main(argv: list[str] | None = None) -> int:
         from_date=from_date,
         to_date=to_date,
         run_name=args.run_name,
+        ref_number=args.ref_number,
     )
 
     try:

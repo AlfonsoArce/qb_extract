@@ -9,6 +9,7 @@ Two categories:
 from __future__ import annotations
 
 from dataclasses import dataclass
+from xml.sax.saxutils import escape
 
 
 @dataclass
@@ -237,6 +238,7 @@ def build_transactional_filters(
     qdef: QueryDef,
     from_date: str | None = None,
     to_date: str | None = None,
+    ref_number: str | None = None,
 ) -> str:
     """
     Build the inner filter XML for a transactional query.
@@ -245,16 +247,26 @@ def build_transactional_filters(
         qdef: The query definition.
         from_date: ISO date 'YYYY-MM-DD' or None.
         to_date: ISO date 'YYYY-MM-DD' or None.
+        ref_number: Exact transaction reference number (e.g. the invoice number).
+            When given, returns a single specific transaction and the date range
+            is ignored (see note below).
 
     Returns:
         XML fragment to insert inside the request element.
 
     Note on element ordering: QBXML is strict about element order. Filters must
     appear BEFORE include flags. Date range goes first, then includes.
+
+    Note on ref_number: in QBXML the exact <RefNumber> match belongs to a choice
+    that is mutually exclusive with the iterator/MaxReturned + date-range filter
+    group. So when ref_number is set we emit only <RefNumber> (no date filter),
+    and the caller MUST run this through run_simple_query (no iterator).
     """
     parts: list[str] = []
 
-    if from_date or to_date:
+    if ref_number:
+        parts.append(f"<RefNumber>{escape(ref_number)}</RefNumber>")
+    elif from_date or to_date:
         date_filter = "<TxnDateRangeFilter>"
         if from_date:
             date_filter += f"<FromTxnDate>{from_date}</FromTxnDate>"

@@ -68,6 +68,7 @@ class Extractor:
         from_date: str | None = None,
         to_date: str | None = None,
         run_name: str | None = None,
+        ref_number: str | None = None,
     ):
         self.output_root = Path(output_root)
         self.app_name = app_name
@@ -75,6 +76,7 @@ class Extractor:
         self.qbxml_version = qbxml_version
         self.from_date = from_date
         self.to_date = to_date
+        self.ref_number = ref_number
 
         if run_name is None:
             run_name = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
@@ -209,11 +211,17 @@ class Extractor:
 
         try:
             if is_transactional:
-                filters = build_transactional_filters(qdef, self.from_date, self.to_date)
+                filters = build_transactional_filters(
+                    qdef, self.from_date, self.to_date, self.ref_number
+                )
             else:
                 filters = qdef.inner_filters
 
-            if qdef.supports_iterator:
+            # An exact RefNumber match is incompatible with the iterator/MaxReturned
+            # pattern, so force the single-page path when filtering one transaction.
+            use_iterator = qdef.supports_iterator and not (is_transactional and self.ref_number)
+
+            if use_iterator:
                 pages = 0
                 for pages, _ in enumerate(
                     run_paged_query(

@@ -39,6 +39,9 @@ uv run python -m qb_extract --skip-transactional
 # Just invoices, for testing
 uv run python -m qb_extract --only invoices --from 2026-01-01
 
+# A single invoice by its invoice number (date range is ignored)
+uv run python -m qb_extract --only invoices --ref-number 10523
+
 # Point at a specific company file (default: the currently-open one)
 uv run python -m qb_extract --company-file "C:/QB/MyCompany.QBW" --from 2024-01-01
 
