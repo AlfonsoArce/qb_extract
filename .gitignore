@@ -16,7 +16,7 @@ venv/
 .mypy_cache/
 
 # Extraction output (timestamped run folders + logs)
-output/
+output/*
 *.log
 
 # OS / editor cruft
