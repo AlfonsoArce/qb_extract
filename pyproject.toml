@@ -1,0 +1,31 @@
+[project]
+name = "qb-extract"
+version = "0.1.0"
+description = "QuickBooks Desktop full data extraction toolkit"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.12"
+dependencies = [
+    # QuickBooks Desktop talks to us over the QBXMLRP2 COM interface, which is
+    # reachable only through pywin32 (pythoncom + win32com.client). Windows-only.
+    "pywin32>=306 ; sys_platform == 'win32'",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "ruff>=0.6",
+]
+
+# No [build-system] table: this is a non-packaged (application) project. uv will
+# create the venv and install dependencies, and the two top-level packages
+# (qb_extract, qb_qbxml) are importable when run from the project root, e.g.
+#   uv run python -m qb_extract --help
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

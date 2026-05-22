@@ -1,0 +1,29 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.venv/
+venv/
+
+# uv
+# (uv.lock IS committed on purpose — it pins the resolved dependency set.)
+
+# Tooling caches
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+
+# Extraction output (timestamped run folders + logs)
+output/
+*.log
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Claude Code local (personal) settings — shared .claude/ config can still be committed
+.claude/settings.local.json
